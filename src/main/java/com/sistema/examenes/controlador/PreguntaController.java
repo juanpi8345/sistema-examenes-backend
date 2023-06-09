@@ -7,7 +7,9 @@ import com.sistema.examenes.servicios.ExamenService;
 import com.sistema.examenes.servicios.PreguntaService;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,8 +47,16 @@ public class PreguntaController {
         
         Collections.shuffle(examenes); 
         return ResponseEntity.ok(examenes);
-    
+
     }
+    
+    @GetMapping("/examen/todos/{examenId}")
+     public ResponseEntity<?> listarPreguntasComoAdministrador(@PathVariable Long examenId){
+        Examen examen = new Examen();
+        examen.setExamenId(examenId);
+        Set<Pregunta> preguntas = preguntaService.obtenerPreguntasDelExamen(examen);
+        return ResponseEntity.ok(preguntas);
+     }
     
     @GetMapping("/{preguntaId}")
     public Pregunta listarPregunta(@PathVariable Long preguntaId){
@@ -58,9 +68,36 @@ public class PreguntaController {
         return ResponseEntity.ok(preguntaService.agregarPregunta(pregunta));
     }
     
-    @PutMapping("/{preguntaId}")
-    public ResponseEntity<Pregunta> actualizarPregunta(@RequestBody Pregunta pregunta, @PathVariable Long preguntaId){
-        return ResponseEntity.ok(preguntaService.actualizarPregunta(pregunta,preguntaId));
+    @PostMapping("/evaluar-examen")
+    public ResponseEntity<?> evaluarExamen(@RequestBody List<Pregunta> preguntas){
+        double puntosMaximos = 0;
+        Integer respuestasCorrectas = 0;
+        Integer intentos = 0;
+        
+        for(Pregunta p : preguntas){
+            Pregunta pregunta = this.preguntaService.listarPregunta(p.getPreguntaId());
+            if(pregunta.getRespuesta().equals(p.getRespuestaDada())){
+                double puntos = Double.parseDouble(preguntas.get(0).getExamen().getPuntosMaximos()) / preguntas.size();
+                puntosMaximos += puntos;
+                respuestasCorrectas++;
+                intentos++;
+            }
+            if(p.getRespuestaDada() != null){
+                intentos++;
+            }
+        }
+        
+        Map<String,Object> respuestas = new HashMap<>();
+        respuestas.put("puntosMaximos",puntosMaximos);
+        respuestas.put("respuestasCorrectas",respuestasCorrectas);
+        respuestas.put("intentos",intentos);
+        return ResponseEntity.ok(respuestas);
+    
+    }
+    
+    @PutMapping("/")
+    public ResponseEntity<Pregunta> actualizarPregunta(@RequestBody Pregunta pregunta){
+        return ResponseEntity.ok(preguntaService.actualizarPregunta(pregunta));
     }
     
     @DeleteMapping("/{preguntaId}")

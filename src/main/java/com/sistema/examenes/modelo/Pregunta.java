@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "preguntas")
@@ -28,6 +29,9 @@ public class Pregunta {
     private String opcion4;
     
     private String respuesta;
+    
+    @Transient
+    private String respuestaDada;
     
     @ManyToOne
     private Examen examen;
@@ -71,6 +75,14 @@ public class Pregunta {
         this.img = img;
     }
 
+    public String getRespuestaDada() {
+        return respuestaDada;
+    }
+
+    public void setRespuestaDada(String respuestaDada) {
+        this.respuestaDada = respuestaDada;
+    }
+
     public String getOpcion1() {
         return opcion1;
     }
@@ -108,7 +120,7 @@ public class Pregunta {
     }
 
     public void setRespuesta(String respuesta) {
-        this.respuesta = respuesta;
+        this.respuesta= respuesta;
     }
 
     public Examen getExamen() {

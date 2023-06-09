@@ -19,8 +19,8 @@ public class PreguntaServiceImp implements PreguntaService {
     }
 
     @Override
-    public Pregunta actualizarPregunta(Pregunta preguntaRequest,Long id) {
-        return preguntaRepositorio.findById(id).map(pregunta->{
+    public Pregunta actualizarPregunta(Pregunta preguntaRequest) {
+        return preguntaRepositorio.findById(preguntaRequest.getPreguntaId()).map(pregunta->{
             pregunta.setContenido(preguntaRequest.getContenido());
             pregunta.setExamen(preguntaRequest.getExamen());
             pregunta.setImg(preguntaRequest.getImg());
@@ -29,8 +29,7 @@ public class PreguntaServiceImp implements PreguntaService {
             pregunta.setOpcion3(preguntaRequest.getOpcion3());
             pregunta.setOpcion4(preguntaRequest.getOpcion4());
             pregunta.setRespuesta(preguntaRequest.getRespuesta());
-            preguntaRepositorio.save(pregunta);
-            return pregunta;
+            return preguntaRepositorio.save(pregunta);
         }).orElse(null);
     }
 
@@ -52,6 +51,11 @@ public class PreguntaServiceImp implements PreguntaService {
     @Override
     public void eliminarPregunta(Long preguntaId) {
          preguntaRepositorio.deleteById(preguntaId);
+    }
+
+    @Override
+    public Pregunta listarPregunta(Long preguntaId) {
+        return this.preguntaRepositorio.findById(preguntaId).orElse(null);
     }
 
 }

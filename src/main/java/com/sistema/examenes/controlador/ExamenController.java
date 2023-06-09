@@ -1,6 +1,8 @@
 package com.sistema.examenes.controlador;
+import com.sistema.examenes.modelo.Categoria;
 import com.sistema.examenes.modelo.Examen;
 import com.sistema.examenes.servicios.ExamenService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,14 +33,33 @@ public class ExamenController {
         return ResponseEntity.ok(examenService.obtenerExamenes());
     }
     
+    @GetMapping("/categoria/{categoriaId}")
+    public List<Examen> listarExamenesDeUnaCategoria(@PathVariable Long categoriaId){
+        Categoria categoria = new Categoria();
+        categoria.setCategoriaId(categoriaId);
+        return examenService.listarExamenesDeUnaCategoria(categoria);
+    }
+    
+    @GetMapping("/activo")
+    public List<Examen> listarExamenesActivos(){
+        return examenService.obtenerExamenesActivos();
+    }
+    
+   @GetMapping("/categoria/activo/{categoriaId}")
+    public List<Examen> listarExamenesActivosDeUnaCategoria(@PathVariable Long categoriaId){
+       Categoria categoria = new Categoria();
+       categoria.setCategoriaId(categoriaId);
+       return examenService.obtenerExamenesActivosDeUnaCategoria(categoria);
+    }
+    
     @PostMapping("/")
     public ResponseEntity<Examen> guardarExamen(@RequestBody Examen examen){
         return ResponseEntity.ok(examenService.agregarExamen(examen));
     }
     
-    @PutMapping("/{examenId}")
-    public Examen actualizarExamen(@RequestBody Examen examen,@PathVariable Long categoriaId){
-          return examenService.actualizarExamen(examen, categoriaId);
+    @PutMapping("/")
+    public Examen actualizarExamen(@RequestBody Examen examen){
+          return examenService.actualizarExamen(examen);
     }
     
     @DeleteMapping("/{examenId}")
